@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { PS2Event } from '../concerns/event.types';
-import { PS2_ENVIRONMENT } from '../census.constants';
+import { EVENT_CHANNEL, PS2_ENVIRONMENT } from '../census.constants';
 
 @Injectable()
 export class EventPublisher {
@@ -14,7 +14,7 @@ export class EventPublisher {
     const { world_id, event_name } = payload;
 
     void this.redis.publish(
-      `events:${this.ps2Environment}:${event_name}`,
+      `${EVENT_CHANNEL}:${this.ps2Environment}:${event_name}`,
       JSON.stringify({
         worldId: world_id,
         eventName: event_name,
