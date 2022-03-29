@@ -12,7 +12,7 @@ import { CensusMessage } from './concerns/message.types';
 import { CensusCommand } from './concerns/command.types';
 
 @Injectable()
-export class EventStream
+export class CensusStream
   implements OnApplicationBootstrap, OnApplicationShutdown
 {
   static readonly HEARTBEAT_INTERVAL = 30 * 1000;
@@ -23,7 +23,7 @@ export class EventStream
 
   static readonly SUBSCRIPTION_INTERVAL = 5 * 3600 * 1000;
 
-  private readonly logger = new Logger('EventStream');
+  private readonly logger = new Logger('CensusStream');
 
   private isStarted = false;
 
@@ -137,13 +137,13 @@ export class EventStream
 
     const diff = Date.now() - this.lastConnectionTime;
 
-    if (diff > EventStream.MIN_RECONNECT_TIMEOUT) {
+    if (diff > CensusStream.MIN_RECONNECT_TIMEOUT) {
       this.connect();
     } else {
       this.reconnectTimeout = setTimeout(() => {
         this.connect();
         this.reconnectTimeout = null;
-      }, EventStream.MIN_RECONNECT_TIMEOUT);
+      }, CensusStream.MIN_RECONNECT_TIMEOUT);
     }
   }
 
@@ -152,7 +152,7 @@ export class EventStream
       this.logger.warn('Connection timed-out, reconnecting');
 
       this.reconnect();
-    }, EventStream.CONNECTION_TIMEOUT);
+    }, CensusStream.CONNECTION_TIMEOUT);
   }
 
   private clearConnectionTimeout(): void {
@@ -168,7 +168,7 @@ export class EventStream
         this.logger.warn('Missed a heartbeat, reconnecting');
         this.reconnect();
       }
-    }, EventStream.HEARTBEAT_INTERVAL).unref();
+    }, CensusStream.HEARTBEAT_INTERVAL).unref();
   }
 
   private clearHeartbeat() {
@@ -195,7 +195,7 @@ export class EventStream
 
     this.subscriptionInterval = setInterval(() => {
       this.subscribe();
-    }, EventStream.SUBSCRIPTION_INTERVAL);
+    }, CensusStream.SUBSCRIPTION_INTERVAL);
   }
 
   private clearSubscription(): void {
