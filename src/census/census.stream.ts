@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+} from '@nestjs/common';
 import { WebSocket } from 'ws';
 import { CensusWsFactory } from './factories/census-ws.factory';
 import { EventHandler } from './event.handler';
@@ -7,7 +12,9 @@ import { CensusMessage } from './concerns/message.types';
 import { CensusCommand } from './concerns/command.types';
 
 @Injectable()
-export class EventStream {
+export class EventStream
+  implements OnApplicationBootstrap, OnApplicationShutdown
+{
   static readonly HEARTBEAT_INTERVAL = 30 * 1000;
 
   static readonly MIN_RECONNECT_TIMEOUT = 1000;
@@ -15,6 +22,8 @@ export class EventStream {
   static readonly CONNECTION_TIMEOUT = 4 * 1000;
 
   static readonly SUBSCRIPTION_INTERVAL = 5 * 3600 * 1000;
+
+  private readonly logger = new Logger('EventStream');
 
   private isStarted = false;
 
@@ -33,20 +42,19 @@ export class EventStream {
   private census: WebSocket;
 
   constructor(
-    private readonly logger: Logger,
     private readonly censusWsFactory: CensusWsFactory,
     private readonly eventHandler: EventHandler,
     private readonly worldTracker: WorldTracker,
   ) {}
 
-  start(): void {
+  onApplicationBootstrap(): void {
     if (this.isStarted) return;
     this.isStarted = true;
 
     this.connect();
   }
 
-  stop(): void {
+  onApplicationShutdown(): void {
     if (!this.isStarted) return;
     this.isStarted = false;
 
@@ -248,8 +256,8 @@ export class EventStream {
 
         this.acknowledgeHeartbeat();
 
-        for (const [world, state] of Object.entries(message.online))
-          this.worldTracker.setWorldState(world, state == 'true');
+        for (const [detail, state] of Object.entries(message.online))
+          this.worldTracker.setWorldState(detail, JSON.parse(state));
 
         break;
       case 'serviceStateChanged':
@@ -260,7 +268,7 @@ export class EventStream {
 
         this.worldTracker.setWorldState(
           message.detail,
-          message.online == 'true',
+          JSON.parse(message.online),
         );
 
         break;

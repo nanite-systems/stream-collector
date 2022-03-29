@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventPublisher } from './event.publisher';
+import { EventPublisher } from './publishers/event.publisher';
 import { PS2Event } from './concerns/event.types';
 
 @Injectable()
