@@ -14,7 +14,7 @@ export class EventPublisher {
     const { world_id, event_name } = payload;
 
     void this.redis.publish(
-      `${EVENT_CHANNEL}:${this.ps2Environment}:${event_name}`,
+      `${EVENT_CHANNEL}:${world_id}:${event_name}`,
       JSON.stringify({
         worldId: world_id,
         eventName: event_name,
