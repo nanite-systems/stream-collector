@@ -1,51 +1,25 @@
-import {
-  Inject,
-  Injectable,
-  OnModuleDestroy,
-  OnModuleInit,
-} from '@nestjs/common';
-import { WorldTracker } from '../trackers/world.tracker';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
-import { Unsubscribable } from 'rxjs';
-import {
-  PS2_ENVIRONMENT,
-  WORLD_STATE_CHANNEL,
-  WORLD_STATE_MAP,
-} from '../census.constants';
+import { PS2_ENVIRONMENT, WORLD_STATE_CHANNEL } from '../census.constants';
 import { WorldAccessor } from '../accessors/world.accessor';
+import { ServiceStateChanged } from '../concerns/message.types';
 
 @Injectable()
-export class WorldStatePublisher implements OnModuleInit, OnModuleDestroy {
-  private unsubscribe?: Unsubscribable;
-
+export class WorldStatePublisher {
   constructor(
     @InjectRedis() private readonly redis: Redis,
-    private readonly worldTracker: WorldTracker,
     private readonly worldAccessor: WorldAccessor,
     @Inject(PS2_ENVIRONMENT) private readonly ps2Environment: string,
   ) {}
 
-  onModuleInit(): void {
-    this.unsubscribe = this.worldTracker.subscribe({
-      next: ({ detail, state }) => {
-        const worldId = this.worldAccessor.detailToId(detail);
-        const worldState = JSON.stringify({
-          worldId,
-          environment: this.ps2Environment,
-          detail,
-          state,
-        });
-
-        void this.redis
-          .pipeline()
-          .publish(WORLD_STATE_CHANNEL, worldState)
-          .hset(WORLD_STATE_MAP, worldId, worldState)
-          .exec();
-      },
-    });
-  }
-
-  onModuleDestroy(): void {
-    this.unsubscribe?.unsubscribe();
+  publish({ detail, online }: ServiceStateChanged): void {
+    void this.redis.publish(
+      WORLD_STATE_CHANNEL,
+      JSON.stringify({
+        worldId: this.worldAccessor.detailToId(detail),
+        detail,
+        state: JSON.stringify(online),
+      }),
+    );
   }
 }

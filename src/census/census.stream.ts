@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { WebSocket } from 'ws';
 import { CensusWsFactory } from './factories/census-ws.factory';
-import { EventHandler } from './event.handler';
-import { WorldTracker } from './trackers/world.tracker';
 import { CensusMessage } from './concerns/message.types';
 import { CensusCommand } from './concerns/command.types';
+import { EventPublisher } from './publishers/event.publisher';
+import { WorldStatePublisher } from './publishers/world-state.publisher';
 
 @Injectable()
 export class CensusStream
@@ -43,8 +43,8 @@ export class CensusStream
 
   constructor(
     private readonly censusWsFactory: CensusWsFactory,
-    private readonly eventHandler: EventHandler,
-    private readonly worldTracker: WorldTracker,
+    private readonly eventPublisher: EventPublisher,
+    private readonly worldStatePublisher: WorldStatePublisher,
   ) {}
 
   onApplicationBootstrap(): void {
@@ -256,9 +256,6 @@ export class CensusStream
 
         this.acknowledgeHeartbeat();
 
-        for (const [detail, state] of Object.entries(message.online))
-          this.worldTracker.setWorldState(detail, JSON.parse(state));
-
         break;
       case 'serviceStateChanged':
         // Gives the state of the different servers
@@ -266,15 +263,12 @@ export class CensusStream
           `Service state changed for "${message.detail}: ${message.online}"`,
         );
 
-        this.worldTracker.setWorldState(
-          message.detail,
-          JSON.parse(message.online),
-        );
+        this.worldStatePublisher.publish(message);
 
         break;
       case 'serviceMessage':
         // Payload contains a game event
-        this.eventHandler.handle(message.payload);
+        this.eventPublisher.publish(message.payload);
 
         break;
       default:
