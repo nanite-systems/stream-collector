@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import {
   CENSUS_SERVICE_ID,
   CENSUS_STREAM_URL,
+  COLLECTOR_ID,
   PS2_ENVIRONMENT,
 } from './census.constants';
 import assert from 'assert';
+import { randomUUID } from 'crypto';
 
 @Module({
   providers: [
@@ -27,6 +29,10 @@ import assert from 'assert';
 
         return process.env.CENSUS_SERVICE_ID;
       },
+    },
+    {
+      provide: COLLECTOR_ID,
+      useFactory: () => randomUUID(),
     },
     {
       provide: CENSUS_STREAM_URL,
