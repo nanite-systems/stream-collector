@@ -22,6 +22,7 @@ export class WorldStatePublisher {
       WORLD_STATE_CHANNEL,
       JSON.stringify({
         collector: this.collectorId,
+        environment: this.ps2Environment,
         worldId: this.worldAccessor.detailToId(detail),
         detail,
         state: JSON.stringify(online),
