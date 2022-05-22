@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
-import { CensusStream } from './census.stream';
-import { CensusWsFactory } from './factories/census-ws.factory';
-import { redisModule } from '../redis/redis.module';
-import { EventPublisher } from './publishers/event.publisher';
-import { ConfigModule } from './config.module';
-import { WorldStatePublisher } from './publishers/world-state.publisher';
-import { WorldAccessor } from './accessors/world.accessor';
+import { StreamManagerService } from './services/stream-manager.service';
+import { Stream } from 'ps2census';
+import { CensusConfig } from './census.config';
+import { ConfigModule } from '@census-reworked/nestjs-utils';
 
 @Module({
-  imports: [redisModule, ConfigModule],
+  imports: [ConfigModule.forFeature([CensusConfig])],
   providers: [
-    CensusStream,
-    CensusWsFactory,
-    EventPublisher,
-    WorldStatePublisher,
-    WorldAccessor,
+    StreamManagerService,
+
+    {
+      provide: Stream.Client,
+      useFactory: (config: CensusConfig) =>
+        new Stream.Client(config.serviceId, config.environment),
+      inject: [CensusConfig],
+    },
   ],
+  exports: [Stream.Client],
 })
 export class CensusModule {}
