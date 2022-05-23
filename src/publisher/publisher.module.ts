@@ -1,11 +1,28 @@
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { PublisherService } from './services/publisher.service';
 import { CensusModule } from '../census/census.module';
-import { RedisAdapterModule } from './adapters/redis/redis-adapter.module';
+import { RabbitMqModule } from '../rabbit-mq/rabbit-mq.module';
+import { Stream } from 'ps2census';
 
 @Module({
-  imports: [CensusModule, RedisAdapterModule],
+  imports: [CensusModule, RabbitMqModule],
   providers: [PublisherService],
-  exports: [PublisherService],
 })
-export class PublisherModule {}
+export class PublisherModule implements OnApplicationBootstrap {
+  constructor(
+    private readonly stream: Stream.Client,
+    private readonly publisher: PublisherService,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.stream.on('message', (message) => {
+      if (
+        message.service == 'event' &&
+        message.type == 'serviceMessage' &&
+        'event_name' in message.payload
+      ) {
+        this.publisher.publish(message.payload);
+      }
+    });
+  }
+}
