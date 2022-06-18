@@ -12,8 +12,6 @@ import { fromEvent, Subscription, takeUntil, timer } from 'rxjs';
 export class StreamManagerService
   implements OnApplicationBootstrap, OnApplicationShutdown
 {
-  static readonly SUBSCRIPTION_INTERVAL = 5 * 3600 * 1000;
-
   private readonly logger = new Logger('StreamManagerService');
 
   private reconnectSubscription?: Subscription;
@@ -33,7 +31,7 @@ export class StreamManagerService
       this.logger.log(`Connected to Census`);
 
       // Subscribe
-      timer(0, StreamManagerService.SUBSCRIPTION_INTERVAL)
+      timer(0, this.config.resubscribeInterval)
         .pipe(takeUntil(close))
         .subscribe(() => {
           void this.subscribe();

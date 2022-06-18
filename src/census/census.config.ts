@@ -1,5 +1,5 @@
 import { ProcessEnv } from '@census-reworked/nestjs-utils';
-import { ArrayUnique, IsIn, IsNotEmpty } from 'class-validator';
+import { ArrayUnique, IsIn, IsInt, IsNotEmpty, Min } from 'class-validator';
 import { PS2Environment, Stream } from 'ps2census';
 import { Transform } from 'class-transformer';
 
@@ -30,6 +30,12 @@ export class CensusConfig {
   @ProcessEnv('PS2_ENVIRONMENT')
   @IsIn(['ps2', 'ps2ps4eu', 'ps2ps4us'])
   environment: PS2Environment;
+
+  @ProcessEnv('RESUBSCRIBE_INTERVAL')
+  @IsInt()
+  @Min(1000)
+  @Transform(({ value }) => Number.parseInt(value, 10))
+  resubscribeInterval = 5 * 3600 * 1000;
 
   @ProcessEnv('SUBSCRIBE_WORLDS')
   @Transform(({ value }) => value.split(','))
