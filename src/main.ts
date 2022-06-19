@@ -10,7 +10,6 @@ async function bootstrap() {
   const config = await app.resolve(AppConfig);
 
   app.useLogger(config.logLevels);
-
   app.enableShutdownHooks();
 }
 

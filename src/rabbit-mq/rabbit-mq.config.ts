@@ -1,10 +1,10 @@
 import { ProcessEnv } from '@census-reworked/nestjs-utils';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsUrl } from 'class-validator';
 
 export class RabbitMqConfig {
   @ProcessEnv('RABBITMQ_URL')
-  @IsNotEmpty()
-  url = 'amqp://localhost';
+  @IsUrl({ protocols: ['amqp'], require_tld: false })
+  url: string;
 
   @ProcessEnv('RABBITMQ_EVENT_EXCHANGE')
   @IsNotEmpty()
