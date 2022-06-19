@@ -27,6 +27,10 @@ export class StreamManagerService
 
     this.logger.log(`Connecting to Census`);
 
+    this.stream.on('debug', (message) => this.logger.verbose(message));
+    this.stream.on('warn', (message) => this.logger.warn(message));
+    this.stream.on('error', (err) => this.logger.error(err));
+
     ready.subscribe(() => {
       this.logger.log(`Connected to Census`);
 
