@@ -6,9 +6,7 @@ import { AppConfig } from './app.config';
 async function bootstrap() {
   ConfigModule.forRoot();
 
-  const app = await NestFactory.createApplicationContext(AppModule, {
-    bufferLogs: true,
-  });
+  const app = await NestFactory.createApplicationContext(AppModule);
   const config = await app.resolve(AppConfig);
 
   app.useLogger(config.logLevels);
