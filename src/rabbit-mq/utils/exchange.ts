@@ -6,7 +6,7 @@ export class Exchange {
     private readonly channel: ChannelWrapper,
   ) {}
 
-  async publish(message: any): Promise<void> {
-    await this.channel.publish(this.name, '', JSON.stringify(message));
+  async publish(message: any, routingKey = ''): Promise<void> {
+    await this.channel.publish(this.name, routingKey, message);
   }
 }

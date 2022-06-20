@@ -1,10 +1,4 @@
-import {
-  Inject,
-  Logger,
-  Module,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-} from '@nestjs/common';
+import { Inject, Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigModule } from '@census-reworked/nestjs-utils';
 import { RabbitMqConfig } from './rabbit-mq.config';
 import { EVENT_EXCHANGE, RABBIT_MQ } from './constants';
@@ -30,9 +24,7 @@ import { ExchangeFactory } from './factories/exchange.factory';
   ],
   exports: [EVENT_EXCHANGE],
 })
-export class RabbitMqModule
-  implements OnApplicationBootstrap, OnApplicationShutdown
-{
+export class RabbitMqModule implements OnApplicationShutdown {
   private readonly logger = new Logger('RabbitMQ');
 
   constructor(
@@ -48,10 +40,6 @@ export class RabbitMqModule
       .on('connectFailed', () => {
         this.logger.log('Connection failed');
       });
-  }
-
-  async onApplicationBootstrap(): Promise<void> {
-    await this.rabbit.connect();
   }
 
   async onApplicationShutdown(): Promise<void> {
