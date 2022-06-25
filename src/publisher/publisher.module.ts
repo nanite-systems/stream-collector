@@ -3,9 +3,15 @@ import { PublisherService } from './services/publisher.service';
 import { CensusModule } from '../census/census.module';
 import { RabbitMqModule } from '../rabbit-mq/rabbit-mq.module';
 import { Stream } from 'ps2census';
+import { ConfigModule } from '@census-reworked/nestjs-utils';
+import { PublisherConfig } from './publisher.config';
 
 @Module({
-  imports: [CensusModule, RabbitMqModule],
+  imports: [
+    ConfigModule.forFeature([PublisherConfig]),
+    CensusModule,
+    RabbitMqModule,
+  ],
   providers: [PublisherService],
 })
 export class PublisherModule implements OnApplicationBootstrap {

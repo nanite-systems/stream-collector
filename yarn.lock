@@ -343,9 +343,9 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@census-reworked/nestjs-utils@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@census-reworked/nestjs-utils/-/nestjs-utils-0.1.2.tgz#fb5bce7daa51a0102bd3e2a839c4aef87499e42b"
-  integrity sha512-OjefRyitN9FurSkbdHaHYQfdhwMKxWRoCTjnpnFvUoBmihMU/tuhs1WSOjP+hDEcIHQ9lepgHuP97/GgqUb+lg==
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@census-reworked/nestjs-utils/-/nestjs-utils-0.1.3.tgz#1828b68d8728aa92049a17753f0bc1601d0421b4"
+  integrity sha512-IlZcDFQ0BvfTC2tVTxYgfgPHcAO9BMWcBJ9ntL/lzkkivwlL0wPIhrOZcPfzro4i6nxsaVMHaSUXXQv070zefA==
   dependencies:
     class-transformer "^0.5.1"
     class-validator "^0.13.2"
