@@ -1,4 +1,4 @@
-<p align="center">
+<div align="center">
 <a href="https://nanite-systems.net/" target="blank">
   <img src="https://nanite-systems.net/images/ns.colored.svg" width="200" alt="Nest Logo" />
 </a>
@@ -8,7 +8,7 @@
 [![dependecies](https://img.shields.io/librariesio/github/nanite-systems/stream-collector)](https://libraries.io/github/nanite-systems/stream-collector)
 [![license](https://img.shields.io/github/license/nanite-systems/stream-collector)](https://github.com/nanite-systems/stream-collector/blob/main/LICENSE)
 
-</p>
+</div>
 
 ## Description
 
@@ -18,7 +18,7 @@ API.
 ## Requirements
 
 - NodeJS v16
-- [stream devkit](https://github.com/nanite-systems/stream-devkit/)*
+- [Stream devkit](https://github.com/nanite-systems/stream-devkit/)*
 
 ## Installation
 
