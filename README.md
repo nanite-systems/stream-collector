@@ -18,7 +18,7 @@ API.
 ## Requirements
 
 - NodeJS v16
-- [Stream devkit](https://github.com/nanite-systems/stream-devkit/)*
+- [Stream devkit](https://github.com/nanite-systems/stream-devkit/)
 
 ## Installation
 
