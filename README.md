@@ -43,6 +43,25 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Docker containers
+
+As part of this project's releases, we build and ship a docker container for your use. To use this, please use the following image name:
+
+```
+ghcr.io/nanite-systems/stream-collector:<version>
+```
+
+e.g. to run this application with a `docker run` command, execute:
+
+```bash
+docker run \
+-e "SERVICE_ID=example" \
+-e "PS2_ENVIRONMENT=ps2" \
+ghcr.io/nanite-systems/stream-collector
+```
+
+This will pull in the latest image and execute in your local docker runtime. You will need to supply a RabbitMQ server and inject that to the ENV `RABBIT_URL` for the service to fully work (see our [DevKit](https://github.com/nanite-systems/stream-devkit) to conveniently spin up an instance).
+
 ## License
 
 All NS projects are [Apache-2.0 licensed](LICENSE).
