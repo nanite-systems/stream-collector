@@ -42,7 +42,7 @@ export class CensusConfig {
   worlds: string[] = ['all'];
 
   @ProcessEnv('SUBSCRIBE_EVENTS')
-  @IsIn(['all', ...EventNames], {
+  @IsIn(EventNames, {
     each: true,
   })
   @ArrayUnique()
