@@ -47,7 +47,7 @@ export class CensusConfig {
   })
   @ArrayUnique()
   @Transform(({ value }) => value.split(','))
-  events: Stream.CensusCommands.Subscribe['eventNames'];
+  events: Stream.CensusCommands.Subscribe['eventNames'] = ['all'];
 
   @ProcessEnv('SUBSCRIBE_LOGICAL_AND')
   @Transform(({ value }) => value.toUpperCase() == 'TRUE')
