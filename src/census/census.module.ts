@@ -12,7 +12,9 @@ import { ConfigModule } from '@census-reworked/nestjs-utils';
     {
       provide: Stream.Client,
       useFactory: (config: CensusConfig) =>
-        new Stream.Client(config.serviceId, config.environment),
+        new Stream.Client(config.serviceId, config.environment, {
+          endpoint: config.endpoint,
+        }),
       inject: [CensusConfig],
     },
   ],

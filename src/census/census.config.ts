@@ -5,6 +5,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsUrl,
   Min,
 } from 'class-validator';
 import { PS2Environment, Stream } from 'ps2census';
@@ -37,6 +38,11 @@ export class CensusConfig {
   @ProcessEnv('PS2_ENVIRONMENT')
   @IsIn(['ps2', 'ps2ps4eu', 'ps2ps4us'])
   environment: PS2Environment;
+
+  @ProcessEnv('STREAM_ENDPOINT')
+  @IsOptional()
+  @IsUrl({ protocols: ['wss', 'ws'], require_tld: false })
+  endpoint?: string;
 
   @ProcessEnv('RESUBSCRIBE_INTERVAL')
   @IsOptional()
