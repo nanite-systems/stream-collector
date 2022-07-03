@@ -27,7 +27,7 @@ export class PublisherModule implements OnApplicationBootstrap {
         message.type == 'serviceMessage' &&
         'event_name' in message.payload
       ) {
-        this.publisher.publish(message.payload);
+        void this.publisher.publish(message.payload);
       }
     });
   }

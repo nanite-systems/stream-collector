@@ -14,11 +14,14 @@ export class PublisherService {
   async publish(payload: Stream.PS2Event): Promise<void> {
     const { event_name: eventName, world_id: worldId } = payload;
 
-    await this.exchange.publish({
-      eventName,
-      worldId,
-      collector: this.config.publisherId,
-      payload,
-    });
+    await this.exchange.publish(
+      {
+        eventName,
+        worldId,
+        collector: this.config.collectorId,
+        payload,
+      },
+      `${worldId}.${this.config.collectorId}`,
+    );
   }
 }

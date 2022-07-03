@@ -26,7 +26,7 @@ export class StreamManagerService
     const close = fromEvent(this.stream, 'close');
 
     this.logger.log(`Connecting to Census`);
-
+    this.stream.on('close', console.log);
     this.stream.on('debug', (message) => this.logger.verbose(message));
     this.stream.on('warn', (message) => this.logger.warn(message));
     this.stream.on('error', (err) => this.logger.error(err));
@@ -34,7 +34,20 @@ export class StreamManagerService
     ready.subscribe(() => {
       this.logger.log(`Connected to Census`);
 
-      // Subscribe
+      if (this.config.reconnectInterval) {
+        this.logger.log(`Reconnect set: ${this.config.reconnectInterval}`);
+
+        timer(this.config.reconnectInterval)
+          .pipe(takeUntil(close))
+          .subscribe(() => {
+            this.logger.log('Force reconnect');
+            this.stream.destroy();
+          });
+      }
+
+      if (this.config.resubscribeInterval)
+        this.logger.log(`Resubscribe set: ${this.config.resubscribeInterval}`);
+
       timer(0, this.config.resubscribeInterval)
         .pipe(takeUntil(close))
         .subscribe(() => {
@@ -49,9 +62,7 @@ export class StreamManagerService
       void this.stream.connect();
     });
 
-    try {
-      await this.stream.connect();
-    } catch (err) {}
+    await this.stream.connect();
   }
 
   onApplicationShutdown(): void {
@@ -60,13 +71,17 @@ export class StreamManagerService
   }
 
   private async subscribe(): Promise<void> {
-    await this.stream.send({
-      service: 'event',
-      action: 'subscribe',
-      characters: ['all'],
-      worlds: this.config.worlds,
-      eventNames: this.config.events,
-      logicalAndCharactersWithWorlds: this.config.logicalAnd,
-    });
+    try {
+      await this.stream.send({
+        service: 'event',
+        action: 'subscribe',
+        characters: ['all'],
+        worlds: this.config.worlds,
+        eventNames: this.config.events,
+        logicalAndCharactersWithWorlds: this.config.logicalAnd,
+      });
+    } catch (err) {
+      this.logger.warn(`Failed to send subscription: ${err}`);
+    }
   }
 }

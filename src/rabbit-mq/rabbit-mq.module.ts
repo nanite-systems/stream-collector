@@ -18,7 +18,7 @@ import { ExchangeFactory } from './factories/exchange.factory';
     {
       provide: EVENT_EXCHANGE,
       useFactory: (factory: ExchangeFactory, config: RabbitMqConfig) =>
-        factory.create(config.eventExchange),
+        factory.create(config.collectorExchange),
       inject: [ExchangeFactory, RabbitMqConfig],
     },
   ],
