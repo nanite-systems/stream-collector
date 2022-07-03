@@ -21,7 +21,7 @@ export class PublisherService {
         collector: this.config.collectorId,
         payload,
       },
-      `${worldId}.${this.config.collectorId}`,
+      `${worldId}.${eventName}.${this.config.collectorId}`,
     );
   }
 }
