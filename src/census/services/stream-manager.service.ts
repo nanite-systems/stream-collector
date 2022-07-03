@@ -58,9 +58,7 @@ export class StreamManagerService
       void this.stream.connect();
     });
 
-    try {
-      await this.stream.connect();
-    } catch (err) {}
+    await this.stream.connect();
   }
 
   onApplicationShutdown(): void {
@@ -69,13 +67,17 @@ export class StreamManagerService
   }
 
   private async subscribe(): Promise<void> {
-    await this.stream.send({
-      service: 'event',
-      action: 'subscribe',
-      characters: ['all'],
-      worlds: this.config.worlds,
-      eventNames: this.config.events,
-      logicalAndCharactersWithWorlds: this.config.logicalAnd,
-    });
+    try {
+      await this.stream.send({
+        service: 'event',
+        action: 'subscribe',
+        characters: ['all'],
+        worlds: this.config.worlds,
+        eventNames: this.config.events,
+        logicalAndCharactersWithWorlds: this.config.logicalAnd,
+      });
+    } catch (e) {
+      this.logger.warn('Failed to send subscription');
+    }
   }
 }
