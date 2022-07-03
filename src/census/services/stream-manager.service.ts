@@ -34,6 +34,15 @@ export class StreamManagerService
     ready.subscribe(() => {
       this.logger.log(`Connected to Census`);
 
+      // Reconnect
+      if (this.config.resubscribeInterval)
+        timer(this.config.resubscribeInterval)
+          .pipe(takeUntil(close))
+          .subscribe(() => {
+            this.logger.log('Force reconnect');
+            this.stream.destroy();
+          });
+
       // Subscribe
       timer(0, this.config.resubscribeInterval)
         .pipe(takeUntil(close))
