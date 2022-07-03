@@ -48,14 +48,14 @@ export class CensusConfig {
   @IsOptional()
   @IsInt()
   @Min(1000)
-  @Transform(({ value }) => Number.parseInt(value, 10))
+  @Transform(({ value }) => Number.parseInt(value, 10) * 1000)
   resubscribeInterval?: number;
 
   @ProcessEnv('RECONNECT_INTERVAL')
   @IsOptional()
   @IsInt()
   @Min(1000)
-  @Transform(({ value }) => Number.parseInt(value, 10))
+  @Transform(({ value }) => Number.parseInt(value, 10) * 1000)
   reconnectInterval?: number;
 
   @ProcessEnv('SUBSCRIBE_WORLDS')

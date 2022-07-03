@@ -17,7 +17,7 @@ export class PublisherService {
     await this.exchange.publish({
       eventName,
       worldId,
-      collector: this.config.publisherId,
+      collector: this.config.collectorId,
       payload,
     });
   }
