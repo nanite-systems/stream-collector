@@ -26,7 +26,7 @@ export class StreamManagerService
     const close = fromEvent(this.stream, 'close');
 
     this.logger.log(`Connecting to Census`);
-    this.stream.on('close', console.log);
+
     this.stream.on('debug', (message) => this.logger.verbose(message));
     this.stream.on('warn', (message) => this.logger.warn(message));
     this.stream.on('error', (err) => this.logger.error(err));
