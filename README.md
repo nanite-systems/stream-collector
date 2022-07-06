@@ -3,7 +3,7 @@
   <img src="https://nanite-systems.net/images/ns.colored.svg" width="200" alt="Nest Logo" />
 </a>
 
-![version](https://img.shields.io/github/package-json/v/nanite-systems/stream-collector)
+[![version](https://img.shields.io/github/package-json/v/nanite-systems/stream-collector?color=blue)](https://github.com/nanite-systems/stream-collector)
 [![issues](https://img.shields.io/github/issues/nanite-systems/stream-collector)](https://github.com/nanite-systems/stream-collector/issues)
 [![dependecies](https://img.shields.io/librariesio/github/nanite-systems/stream-collector)](https://libraries.io/github/nanite-systems/stream-collector)
 [![license](https://img.shields.io/github/license/nanite-systems/stream-collector)](https://github.com/nanite-systems/stream-collector/blob/main/LICENSE)
