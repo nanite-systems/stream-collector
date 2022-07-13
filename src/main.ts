@@ -13,13 +13,17 @@ async function bootstrap() {
     logger: config.logLevels,
   });
 
-  process.on('uncaughtException', (err) => {
-    const logger = new Logger('UncaughtException');
+  process
+    .on('unhandledRejection', (err) => {
+      throw err;
+    })
+    .on('uncaughtException', (err) => {
+      const logger = new Logger('UncaughtException');
 
-    logger.error(err, err.stack);
-    app.close();
-    process.exit(1);
-  });
+      logger.error(err, err.stack);
+      app.close();
+      process.exit(1);
+    });
 
   app.enableShutdownHooks();
 }
