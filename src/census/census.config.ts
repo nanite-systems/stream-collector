@@ -1,6 +1,7 @@
 import { ProcessEnv } from '@census-reworked/nestjs-utils';
 import {
   ArrayUnique,
+  IsBoolean,
   IsIn,
   IsInt,
   IsNotEmpty,
@@ -10,6 +11,7 @@ import {
 } from 'class-validator';
 import { PS2Environment, Stream } from 'ps2census';
 import { Transform } from 'class-transformer';
+import { BoolTransform } from '../utils/transformers.decorators';
 
 const EventNames: Stream.CensusCommands.Subscribe['eventNames'] = [
   'all',
@@ -58,6 +60,20 @@ export class CensusConfig {
   @Transform(({ value }) => Number.parseInt(value, 10) * 1000)
   reconnectInterval?: number;
 
+  @ProcessEnv('RECONNECT_DELAY_FAULT')
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => Number.parseInt(value, 10) * 1000)
+  reconnectDelayFault = 5000;
+
+  @ProcessEnv('RECONNECT_DELAY')
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => Number.parseInt(value, 10) * 1000)
+  reconnectDelay = 0;
+
   @ProcessEnv('SUBSCRIBE_WORLDS')
   @Transform(({ value }) => value.split(','))
   worlds: string[] = ['all'];
@@ -71,6 +87,7 @@ export class CensusConfig {
   events: Stream.CensusCommands.Subscribe['eventNames'] = ['all'];
 
   @ProcessEnv('SUBSCRIBE_LOGICAL_AND')
-  @Transform(({ value }) => value.toUpperCase() == 'TRUE')
+  @IsBoolean()
+  @BoolTransform()
   logicalAnd = false;
 }

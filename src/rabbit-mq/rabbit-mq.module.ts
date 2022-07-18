@@ -18,7 +18,11 @@ import { ExchangeFactory } from './factories/exchange.factory';
     {
       provide: EVENT_EXCHANGE,
       useFactory: (factory: ExchangeFactory, config: RabbitMqConfig) =>
-        factory.create(config.collectorExchange),
+        factory.create(config.collectorExchange, {
+          type: config.collectorExchangeType,
+          durable: config.collectorExchangeDurable,
+          autoDelete: config.collectorExchangeAutoDelete,
+        }),
       inject: [ExchangeFactory, RabbitMqConfig],
     },
   ],

@@ -3,6 +3,7 @@ import {
   Logger,
   OnApplicationBootstrap,
   OnApplicationShutdown,
+  OnModuleInit,
 } from '@nestjs/common';
 import { Stream } from 'ps2census';
 import { CensusConfig } from '../census.config';
@@ -10,22 +11,24 @@ import { fromEvent, Subscription, takeUntil, timer } from 'rxjs';
 
 @Injectable()
 export class StreamManagerService
-  implements OnApplicationBootstrap, OnApplicationShutdown
+  implements OnModuleInit, OnApplicationBootstrap, OnApplicationShutdown
 {
   private readonly logger = new Logger('StreamManagerService');
 
   private reconnectSubscription?: Subscription;
 
+  private reconnectDelay: number;
+
   constructor(
     private readonly stream: Stream.Client,
     private readonly config: CensusConfig,
-  ) {}
+  ) {
+    this.reconnectDelay = config.reconnectDelay;
+  }
 
-  async onApplicationBootstrap(): Promise<void> {
+  onModuleInit(): void {
     const ready = fromEvent(this.stream, 'ready');
     const close = fromEvent(this.stream, 'close');
-
-    this.logger.log(`Connecting to Census`);
 
     this.stream.on('debug', (message) => this.logger.verbose(message));
     this.stream.on('warn', (message) => this.logger.warn(message));
@@ -35,7 +38,7 @@ export class StreamManagerService
       this.logger.log(`Connected to Census`);
 
       if (this.config.reconnectInterval) {
-        this.logger.log(`Reconnect set: ${this.config.reconnectInterval}`);
+        this.logger.verbose(`Reconnect set: ${this.config.reconnectInterval}`);
 
         timer(this.config.reconnectInterval)
           .pipe(takeUntil(close))
@@ -46,7 +49,9 @@ export class StreamManagerService
       }
 
       if (this.config.resubscribeInterval)
-        this.logger.log(`Resubscribe set: ${this.config.resubscribeInterval}`);
+        this.logger.verbose(
+          `Resubscribe set: ${this.config.resubscribeInterval}`,
+        );
 
       timer(0, this.config.resubscribeInterval)
         .pipe(takeUntil(close))
@@ -56,18 +61,37 @@ export class StreamManagerService
     });
 
     this.reconnectSubscription = close.subscribe(() => {
-      this.logger.log(`Reconnecting to Census`);
+      this.logger.debug(`Reconnecting to Census`);
 
-      // TODO: Add some delay between reconnects
-      void this.stream.connect();
+      setTimeout(async () => {
+        try {
+          await this.connect();
+        } catch {}
+      }, this.reconnectDelay);
     });
+  }
 
-    await this.stream.connect();
+  async onApplicationBootstrap(): Promise<void> {
+    this.logger.log(`Connecting to Census`);
+
+    await this.connect();
   }
 
   onApplicationShutdown(): void {
     this.reconnectSubscription.unsubscribe();
     this.stream.destroy();
+  }
+
+  private async connect(): Promise<void> {
+    try {
+      await this.stream.connect();
+
+      this.reconnectDelay = this.config.reconnectDelay;
+    } catch (err) {
+      this.logger.warn(`Connection failed: ${JSON.stringify(err)}`);
+
+      this.reconnectDelay = this.config.reconnectDelayFault;
+    }
   }
 
   private async subscribe(): Promise<void> {
